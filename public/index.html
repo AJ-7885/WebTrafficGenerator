@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Web Traffic Generator</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">&#9654;</span>
+        <div>
+          <h1>Web Traffic Generator</h1>
+          <p class="tagline">Rotates proxies to simulate visitors from multiple locations worldwide</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel config" aria-label="Configuration">
+        <h2>Configuration</h2>
+
+        <label class="field">
+          <span>Target URL</span>
+          <input id="url" type="url" placeholder="https://example.com" autocomplete="off" />
+        </label>
+
+        <div class="row">
+          <label class="field">
+            <span>Concurrent Visitors</span>
+            <input id="concurrency" type="number" min="1" max="10000" value="50" />
+          </label>
+          <label class="field">
+            <span>Duration (sec, 0 = unlimited)</span>
+            <input id="durationSec" type="number" min="0" max="86400" value="30" />
+          </label>
+        </div>
+
+        <div class="row">
+          <label class="field">
+            <span>Max Requests (0 = unlimited)</span>
+            <input id="maxRequests" type="number" min="0" value="0" />
+          </label>
+          <label class="field">
+            <span>Timeout (ms)</span>
+            <input id="timeoutMs" type="number" min="1000" value="15000" />
+          </label>
+        </div>
+
+        <label class="field">
+          <span>Proxy List (one per line, ip:port)</span>
+          <textarea id="proxyList" rows="6" placeholder="Loading proxies from IP.txt..." spellcheck="false"></textarea>
+        </label>
+        <div class="actions" style="margin-top: -6px;">
+          <button id="testProxiesBtn" class="btn secondary" style="font-size:12px;padding:7px 10px;">Test Proxies</button>
+          <span id="testResult" class="test-result"></span>
+        </div>
+
+        <div class="checks">
+          <label class="check"><input id="rotateProxy" type="checkbox" checked /> Rotate proxy every request</label>
+        </div>
+
+        <div class="actions">
+          <button id="startBtn" class="btn primary">Start Traffic</button>
+          <button id="stopBtn" class="btn danger" disabled>Stop</button>
+        </div>
+        <p id="formError" class="form-error" role="alert"></p>
+      </section>
+
+      <section class="panel results" aria-label="Live results">
+        <div class="results-head">
+          <h2>Live Results</h2>
+          <span id="statusPill" class="pill idle">Idle</span>
+        </div>
+
+        <div class="progress-wrap">
+          <div class="progress"><div id="progressBar" class="progress-inner"></div></div>
+          <span id="progressLabel" class="progress-label">—</span>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat"><span class="stat-label">Completed</span><span id="stCompleted" class="stat-value">0</span></div>
+          <div class="stat"><span class="stat-label">In Flight</span><span id="stInflight" class="stat-value">0</span></div>
+          <div class="stat ok"><span class="stat-label">OK (2xx/3xx)</span><span id="stOk" class="stat-value">0</span></div>
+          <div class="stat bad"><span class="stat-label">Failed</span><span id="stFailed" class="stat-value">0</span></div>
+          <div class="stat"><span class="stat-label">Req/s (now)</span><span id="stRps" class="stat-value">0</span></div>
+          <div class="stat"><span class="stat-label">Req/s (avg)</span><span id="stAvgRps" class="stat-value">0</span></div>
+          <div class="stat"><span class="stat-label">Data Received</span><span id="stBytes" class="stat-value">0 B</span></div>
+          <div class="stat"><span class="stat-label">Proxies</span><span id="stProxies" class="stat-value">0</span></div>
+        </div>
+
+        <div class="proxy-status">
+          <span class="proxy-label">Last proxy:</span>
+          <code id="stProxyAddr" class="proxy-addr">—</code>
+        </div>
+
+        <div class="charts">
+          <figure>
+            <figcaption>Throughput (req/s)</figcaption>
+            <canvas id="rpsChart" width="520" height="120"></canvas>
+          </figure>
+          <figure>
+            <figcaption>Success vs Failed</figcaption>
+            <canvas id="okChart" width="520" height="120"></canvas>
+          </figure>
+        </div>
+
+        <div class="dist">
+          <div class="dist-col">
+            <h3>Status Codes</h3>
+            <ul id="statusList" class="dist-list"><li class="muted">No data yet</li></ul>
+          </div>
+          <div class="dist-col">
+            <h3>Errors</h3>
+            <ul id="errorList" class="dist-list"><li class="muted">None</li></ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      Web Traffic Generator &middot; Rotates proxies to simulate multi-location traffic
+    </footer>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
